@@ -35,14 +35,12 @@ class Card():
     def __repr__(self):
         return f'{self.rank}{self.suit}'
 
-
 def pickCards(remaining):
     cardsPicked = set()
     while len(cardsPicked) != remaining:
         cardP = random.choice(list(cards))
         cardsPicked.add(cardP)
     return cardsPicked
-
 
 # handtypes always empty
 def trialSucceeds():
@@ -61,7 +59,6 @@ def trialSucceeds():
     C = 0 
     straight = False
     for card in cardsDown:
-        # print(card)
         handTypes[card.suit] = handTypes.get(card.suit, 0) + 1
         handTypes[card.rank] = handTypes.get(card.rank, 0) + 1
     for key in handTypes:
@@ -83,26 +80,39 @@ def trialSucceeds():
                 S = handTypes[key]
             if key == 'C':
                 C = handTypes[key]
-    if D >= 5 or H >= 5 or S >= 5 or C >= 5:
-        # print(cardsDown)
-        # print(flush(cardsDown))
-        if flush(cardsDown)[0] and flush(cardsDown)[1] == 14:
-            return 'Royal Flush'
-        elif flush(cardsDown)[0]:
-            return 'Straight Flush'
-        else:
-            straight = True
-    # else:
-    if pairs >= 1 and triples >= 1: return 'Full House'
+    # if D >= 5 or H >= 5 or S >= 5 or C >= 5:
+    if flush(cardsDown)[0] == True and flush(cardsDown)[1] == 14: return 'Royal Flush'
+    elif flush(cardsDown)[0] == True: return 'Straight Flush'
+    elif pairs >= 1 and triples >= 1: return 'Full House'
     elif quadruple == 1: return "Four Of A Kind"
-    elif D >= 5 or H >= 5 or S >= 5 or C >= 5 and not flush(cardsDown)[0]: return "Flush"
-    elif straight: return 'Straight'
+    elif D >= 5 or H >= 5 or S >= 5 or C >= 5: return "Flush"
+    elif checkStraight(cardsDown): return 'Straight'
     elif pairs == 0 and triples >= 1: return 'Triple'
     elif pairs >= 2 and triples == 0: return 'Two pair'
     elif pairs == 1 and triples == 0: return 'One pair'
-    else: 
+    else:  return 'No Pair'
         # print(cardsDown, '\n', handTypes, '\n', D,H,S,C,  '\n',pairs, triples, singles)
-        return 'No Pair'
+
+
+
+def checkStraight(deck):
+    numbers = []
+    for card in deck:
+        numbers.append((card.value, card.suit))
+    numbers.sort()
+    count = 1
+    previous = numbers[len(numbers)-1][0]
+    for val in range(len(numbers)-2, -1,  -1): 
+        if numbers[val][0] == previous:
+            break
+        if numbers[val][0] == previous - 1:
+            count += 1
+        else:
+            count = 1
+        previous = numbers[val][0]
+        if count == 5:
+            return True
+    return (count >= 5)
 
 def flush(deck):
     numbers = []
@@ -114,6 +124,8 @@ def flush(deck):
     previousSuit = numbers[len(numbers)-1][1]
     highest = numbers[len(numbers)-1][0]
     for val in range(len(numbers)-2, -1,  -1): 
+        if numbers[val][0] == previous:
+            break
         if numbers[val][0] == previous - 1:
             if numbers[val][1] == previousSuit:
                 count += 1
@@ -123,9 +135,9 @@ def flush(deck):
         previous = numbers[val][0]
         previousSuit = numbers[val][1]
         if count == 5:
-            break
+            return (True, highest)
     return (count >= 5, highest)
-    # flush({Card('2','S'), Card('6','S'), Card('5','S'), Card('3','S'), Card('1','S'), Card('1','S')})
+    # flush({Card('2','S'), Card('6','S'), Card('5','S'), Card('3','S'), Card('4','S'), Card('1','S')})
     
 def handOdds(trials):
     royalFlush = 0
@@ -144,9 +156,9 @@ def handOdds(trials):
         if trialSucceeds() == 'Straight Flush':
             straightFlush += 1
         if trialSucceeds() == 'Full House':
-            fullHouse +=1 
+            fullHouse += 1 
         if trialSucceeds() == "Four Of A Kind":
-            fourOfAKind +=1
+            fourOfAKind += 1
         if trialSucceeds() == "Flush":
             flush += 1 
         if trialSucceeds() == 'Straight':
@@ -180,10 +192,6 @@ def initial():
 
 def currentTableScreen(): 
     screen.fill((0,255,150))
-    
-    # font = pygame.font.SysFont("comicsansms", 36)
-    # text = font.render("Welcome to Texas Holdem Probability", True, (0, 0, 0))
-
     playerList = []
     for key in playerHandCord:
         playerList.append(key)
@@ -266,11 +274,12 @@ def currentTableScreen():
     screen.blit(text, (windowW/1.5, windowH/1.54))
 
     font = pygame.font.SysFont('comicsansms', 14)
-    text = font.render(f"Full House %.02f" % (fullHouse * 100), True, (0,0,0))
+    text = font.render(f"Four of a Kind: %.02f" % (fourOfAKind * 100), True, (0,0,0))
+
     screen.blit(text, (windowW/1.5, windowH/1.47))
 
     font = pygame.font.SysFont('comicsansms', 14)
-    text = font.render(f"Four of a Kind: %.02f" % (fourOfAKind * 100), True, (0,0,0))
+    text = font.render(f"Full House %.02f" % (fullHouse * 100), True, (0,0,0))
     screen.blit(text, (windowW/1.5, windowH/1.41))
 
     font = pygame.font.SysFont('comicsansms', 14)
@@ -344,6 +353,34 @@ def cardsToPickFrom():
                 
             row += 1
 
+def pickingScreen():
+    screen.fill((0,255,150))
+    # Question
+    font = pygame.font.SysFont('comicsansms', 36)
+    text = font.render("Would you like the app to run faster ", 56, (0,0,0))
+    screen.blit(text, (150, 25))
+    font = pygame.font.SysFont('comicsansms', 36)
+    text = font.render("or be more accurate in the probabilities?", 56, (0,0,0))
+    screen.blit(text, (125, 25+36))
+    # next card button
+    rectangle = pygame.image.load('roundSquare.png')
+    rectangle = pygame.transform.scale(rectangle, (windowW//2, windowH//5))
+    screen.blit(rectangle, (windowW/100, windowH/2.2))
+    # next card button text
+    font = pygame.font.SysFont('comicsansms', 36)
+    text = font.render("Run Faster", 56, (255, 255, 255))
+    screen.blit(text, (windowW/7, windowH/2))
+
+    # next card button
+    rectangle = pygame.image.load('roundSquare.png')
+    rectangle = pygame.transform.scale(rectangle, (windowW//2, windowH//5))
+    screen.blit(rectangle, (windowW/2, windowH/2.2))
+    # next card button text
+    font = pygame.font.SysFont('comicsansms', 36)
+    text = font.render("Accuracy", 56, (255, 255, 255))
+    screen.blit(text, (windowW/1.55, windowH/2))
+
+
 running = True
 initalScreen = True
 tableScreen = False
@@ -353,6 +390,8 @@ playerHandCord = {}
 playerHand = {}
 nextScreen = True
 down = False
+pickEfficiency = False
+trials = 10**5
 (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0,0
 
 makeDeck()
@@ -379,7 +418,8 @@ while running:
             nextScreen = True
             down = False
             makeDeck()
-                
+            (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0,0
+    
     # runs the welcome screen if the boolean is true (which it is initally, but doesnt turn true again afterwards)
     if initalScreen:
         initial()
@@ -387,8 +427,22 @@ while running:
             pos = pygame.mouse.get_pos()
             if (332 < pos[0] < 505 and 461 < pos[1] < 544):
                 initalScreen = False
-                tableScreen = True
+                pickEfficiency = True
         pygame.display.update()
+
+    if pickEfficiency:
+        pickingScreen()
+        if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            print(pos)
+            if 30 <= pos[0] <= 420 and 276 <= pos[1] <=380:
+                trials = 12**3
+                pickEfficiency = False
+                tableScreen = True
+            elif 469 <= pos[0] <= 858 and 276 <= pos[1] <= 381:
+                trials = 10**5
+                pickEfficiency = False
+                tableScreen = True
 
     if tableScreen:
         currentTableScreen()
@@ -420,8 +474,19 @@ while running:
                     cardScreen = False 
                     break
             if lenCards != len(cards):
-                (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
-                straight, triple, twoPair, onePair, noPair) = handOdds(10**5)
+                if flush(playerHandCord)[0] == True and flush(playerHandCord)[1] == 14: 
+                    ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                    straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                    royalFlush = 1
+                elif flush(playerHandCord)[0] == True: 
+                    (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                    straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                    straightFlush = 1
+                else:  
+                    (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                    straight, triple, twoPair, onePair, noPair) = handOdds(trials)
+                    fullHouse += triple
+                    triple = 0
 
     down = False
     pygame.display.update()
