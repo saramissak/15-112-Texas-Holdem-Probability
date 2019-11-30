@@ -94,7 +94,6 @@ def trialSucceeds():
         # print(cardsDown, '\n', handTypes, '\n', D,H,S,C,  '\n',pairs, triples, singles)
 
 
-
 def checkStraight(deck):
     numbers = []
     for card in deck:
