@@ -1,5 +1,6 @@
 import pygame
 import random
+# from playingAgainstComputer import *
 
 pygame.init()
 
@@ -43,11 +44,11 @@ def pickCards(remaining):
     return cardsPicked
 
 # handtypes always empty
-def trialSucceeds():
+def trialSucceeds(deck):
     handTypes = {'A': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, 'J': 0, 'Q': 0, 'K': 0,
             'D': 0, 'H': 0, 'S': 0, 'C': 0}
-    cardsPicked = pickCards(7 - len(playerHandCord))
-    cardsDown = list(cardsPicked) + list(playerHandCord)
+    cardsPicked = pickCards(7 - len(deck))
+    cardsDown = list(cardsPicked) + list(deck)
     # print('trialssucccs', cardsPicked, playerHandCord)
     pairs = 0
     triples = 0
@@ -138,7 +139,7 @@ def flush(deck):
     return (count >= 5, highest)
     # flush({Card('2','S'), Card('6','S'), Card('5','S'), Card('3','S'), Card('4','S'), Card('1','S')})
     
-def handOdds(trials):
+def handOdds(trials, deck):
     royalFlush = 0
     straightFlush = 0
     fullHouse = 0
@@ -150,25 +151,25 @@ def handOdds(trials):
     onePair = 0
     noPair = 0
     for trial in range(trials):
-        if trialSucceeds() == 'Royal Flush':
+        if trialSucceeds(deck) == 'Royal Flush':
             royalFlush += 1
-        if trialSucceeds() == 'Straight Flush':
+        if trialSucceeds(deck) == 'Straight Flush':
             straightFlush += 1
-        if trialSucceeds() == 'Full House':
+        if trialSucceeds(deck) == 'Full House':
             fullHouse += 1 
-        if trialSucceeds() == "Four Of A Kind":
+        if trialSucceeds(deck) == "Four Of A Kind":
             fourOfAKind += 1
-        if trialSucceeds() == "Flush":
+        if trialSucceeds(deck) == "Flush":
             flush += 1 
-        if trialSucceeds() == 'Straight':
+        if trialSucceeds(deck) == 'Straight':
             straight += 1
-        if trialSucceeds() == 'Triple':
+        if trialSucceeds(deck) == 'Triple':
             triple += 1 
-        if trialSucceeds() == 'Two pair':
+        if trialSucceeds(deck) == 'Two pair':
             twoPair +=1 
-        if trialSucceeds() == 'One pair':
+        if trialSucceeds(deck) == 'One pair':
             onePair += 1
-        if trialSucceeds() == 'No Pair':
+        if trialSucceeds(deck) == 'No Pair':
             noPair += 1
     return (royalFlush/trials, straightFlush/trials, fullHouse/trials,
     fourOfAKind/trials, flush/trials, straight/trials, triple/trials,
@@ -379,6 +380,34 @@ def pickingScreen():
     text = font.render("Accuracy", 56, (255, 255, 255))
     screen.blit(text, (windowW/1.55, windowH/2))
 
+def pickPlayingMode():
+    screen.fill((0,255,150))
+    font = pygame.font.SysFont('comicsansms', 36)
+    text = font.render("Would you like to calculate your ", 56, (0,0,0))
+    screen.blit(text, (150, 25))
+    font = pygame.font.SysFont('comicsansms', 36)
+    text = font.render("probabilities or play Texas Holdem?", 56, (0,0,0))
+    screen.blit(text, (125, 25+36))
+
+    # next card button
+    rectangle = pygame.image.load('roundSquare.png')
+    rectangle = pygame.transform.scale(rectangle, (windowW//2, windowH//5))
+    screen.blit(rectangle, (windowW/100, windowH/2.2))
+    # next card button text
+    font = pygame.font.SysFont('comicsansms', 36)
+    text = font.render("Probabilities", 56, (255, 255, 255))
+    screen.blit(text, (windowW/7, windowH/2))
+
+    # next card button
+    rectangle = pygame.image.load('roundSquare.png')
+    rectangle = pygame.transform.scale(rectangle, (windowW//2, windowH//5))
+    screen.blit(rectangle, (windowW/2, windowH/2.2))
+    # next card button text
+    font = pygame.font.SysFont('comicsansms', 36)
+    text = font.render("Play Poker", 56, (255, 255, 255))
+    screen.blit(text, (windowW/1.55, windowH/2))
+
+
 
 running = True
 initalScreen = True
@@ -387,10 +416,11 @@ cardScreen = False
 cards = {}
 playerHandCord = {}
 playerHand = {}
-nextScreen = True
+nextScreen = False
 down = False
 pickEfficiency = False
 trials = 10**5
+pickPlay = False
 (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0,0
 
 makeDeck()
@@ -404,20 +434,19 @@ while running:
              running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             down = True
-
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_r:
-            running = True
-            initalScreen = True
-            tableScreen = False
-            cardScreen = False
-            cards = {}
-            playerHandCord = {}
-            playerHand = {}
-            nextScreen = True
-            down = False
-            makeDeck()
-            (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0,0
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                running = True
+                initalScreen = True
+                tableScreen = False
+                cardScreen = False
+                cards = {}
+                playerHandCord = {}
+                playerHand = {}
+                nextScreen = True
+                down = False
+                makeDeck()
+                (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0,0
     
     # runs the welcome screen if the boolean is true (which it is initally, but doesnt turn true again afterwards)
     if initalScreen:
@@ -426,10 +455,24 @@ while running:
             pos = pygame.mouse.get_pos()
             if (332 < pos[0] < 505 and 461 < pos[1] < 544):
                 initalScreen = False
-                pickEfficiency = True
+                pickPlay = True
         pygame.display.update()
-
-    if pickEfficiency:
+        
+    if pickPlay:
+        pickPlayingMode()
+        for event in pygame.event.get(): 
+            if event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                print(pos)
+                if 30 <= pos[0] <= 420 and 276 <= pos[1] <=380:
+                    pickEfficiency = True
+                    pickPlay = False
+                elif 469 <= pos[0] <= 858 and 276 <= pos[1] <= 381:
+                    pickPlay = False
+                    from playingAgainstComputer import *    
+                down = False
+                continue
+    elif pickEfficiency:
         pickingScreen()
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
@@ -450,11 +493,9 @@ while running:
             # print(pos)
             if len(playerHandCord) != 7:
                 if (19 < pos[0] < 170 and 409 < pos[1] < 479): # these are the positions of the first blank card
-                    # print(playerHandCord)
                     # this is where it changes screens
                     tableScreen = False
                     cardScreen = True
-            # (19, 409), (170,409) (170, 479)
 
     elif cardScreen:
         cardsToPickFrom()
@@ -483,7 +524,7 @@ while running:
                     straightFlush = 1
                 else:  
                     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
-                    straight, triple, twoPair, onePair, noPair) = handOdds(trials)
+                    straight, triple, twoPair, onePair, noPair) = handOdds(trials, playerHandCord)
                     fullHouse += triple
                     triple = 0
 

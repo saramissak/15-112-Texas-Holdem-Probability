@@ -1,6 +1,10 @@
 import pygame
 import random
-import time
+from texasHoldemAnimation import Card
+from texasHoldemAnimation import pickCards
+from texasHoldemAnimation import trialSucceeds
+from texasHoldemAnimation import handOdds
+    
 
 pygame.init()
 
@@ -8,9 +12,9 @@ windowW = 900
 windowH = 600
 screen = pygame.display.set_mode((windowW, windowH))
 
-pygame.display.set_caption('Texas Holdem Probability')
-icon = pygame.image.load('pc.png')
-pygame.display.set_icon(icon)
+# pygame.display.set_caption('Texas Holdem Probability')
+# icon = pygame.image.load('pc.png')
+# pygame.display.set_icon(icon)
 
 class Card():
     def __init__(self, rank, suit):
@@ -140,12 +144,12 @@ def winner(tableCards, playerHandPlaying, opponentCards):
     elif flush(opponent)[0] == True: # checks if opponent has a straight flush
         return False
     elif pairsP >= 1 and triplesP >= 1 and pairsO >= 1 and triplesO >= 1: 
-        if highestP == 'A':
+        if highestsP == 'A':
             return True
-        elif highestO == 'A':
+        elif highestsO == 'A':
             return False
         else:
-            return highestP > highestO
+            return returnValue(highestsP0) > returnValue(highestsO)
     elif quadrupleP == 1 and quadrupleO == 1: 
         if quadNumP == quadNumO:
             return None
@@ -158,41 +162,41 @@ def winner(tableCards, playerHandPlaying, opponentCards):
     elif (DP >= 5 or HP >= 5 or SP >= 5 or CP >= 5) and (DO >= 5 or HO >= 5 or SO >= 5 or CO >= 5): 
         if DP >= 5:
             for card in player:
-                if card.suit == 'D' and card.value > highP:
+                if card.suit == 'D' and card.value > returnValue(highP):
                     highP = card.value      
         if HP >= 5:
             for card in player:
-                if card.suit == 'H' and card.value > highP:
+                if card.suit == 'H' and card.value > returnValue(highP):
                     highP = card.value
         if SP >= 5:
             for card in player:
-                if card.suit == 'S' and card.value > highP:
+                if card.suit == 'S' and card.value > returnValue(highP):
                     highP = card.value
         if CP >= 5:
             for card in player:
-                if card.suit == 'S' and card.value > highP:
+                if card.suit == 'S' and card.value > returnValue(highP):
                     highP = card.value
         if DO >= 5:
             for card in opponent:
-                if card.suit == 'D' and card.value > highO:
+                if card.suit == 'D' and card.value > returnValue(highO):
                     highO = card.value
         if HO >= 5:
             for card in opponent:
-                if card.suit == 'H' and card.value > highO:
+                if card.suit == 'H' and card.value > returnValue(highO):
                     highO = card.value
         if SO >= 5:
             for card in opponent:
-                if card.suit == 'S' and card.value > highO:
+                if card.suit == 'S' and card.value > returnValue(highO):
                     highO = card.value
         if CO >= 5:
             for card in opponent:
-                if card.suit == 'C' and card.value > highO:
+                if card.suit == 'C' and card.value > returnValue(highO):
                     highO = card.value
         if highP == 14:
             return True
         if highO == 14:
             return False
-        return highP > highO
+        return returnValue(highP) > returnValue(highO)
     elif (DP >= 5 or HP >= 5 or SP >= 5 or CP >= 5): 
         return True
     elif DO >= 5 or HO >= 5 or SO >= 5 or CO >= 5:
@@ -234,7 +238,15 @@ def winner(tableCards, playerHandPlaying, opponentCards):
     elif pairsO == 1 and triplesO == 0:
         return False 
     else:  
-        return returnValue(highP) > returnValue(highP)
+        if returnValue(highP) == returnValue(highO):
+            for card in opponentCards:
+                if not card.value == returnValue(highO):
+                    highO = card.value
+            for card in playerHandCards:
+                if not card.value == returnValue(highP):
+                    highP = card.value
+            return highP > highO
+        return returnValue(highP) > returnValue(highO)
 
 def returnValue(val):
     if val == 'A':
@@ -319,6 +331,7 @@ gameOver = False
 onTable = 0
 
 makeDeck()
+
 def pickCards(remaining):
     cardsPicked = set()
     while len(cardsPicked) != remaining:
@@ -357,13 +370,41 @@ def drawPlaying():
     screen.blit(text, (windowW/1.25, windowH/1.45))
 
     # Raise
-    blueButton = pygame.image.load('blueSquare.jpg')
-    blueButton = pygame.transform.scale(blueButton, (100, 50))
-    screen.blit(blueButton, (windowW/1.3, windowH/1.26))
+    if not raised:
+        blueButton = pygame.image.load('blueSquare.jpg')
+        blueButton = pygame.transform.scale(blueButton, (100, 50))
+        screen.blit(blueButton, (windowW/1.3, windowH/1.26))
 
-    font = pygame.font.SysFont('comicsansms', 18)
-    text = font.render('Raise', True, (255,255,255))
-    screen.blit(text, (windowW/1.25, windowH/1.26))
+        font = pygame.font.SysFont('comicsansms', 18)
+        text = font.render('Raise', True, (255,255,255))
+        screen.blit(text, (windowW/1.25, windowH/1.26))
+    else: 
+        # amount 10
+        blueButton = pygame.image.load('blueSquare.jpg')
+        blueButton = pygame.transform.scale(blueButton, (100, 25))
+        screen.blit(blueButton, (windowW/1.3, windowH/1.26))
+
+        font = pygame.font.SysFont('comicsansms', 18)
+        text = font.render('$10', True, (255, 255, 255))
+        screen.blit(text, (windowW/1.25, windowH/1.26))
+
+        # amount 20
+        blueButton = pygame.image.load('blueSquare.jpg')
+        blueButton = pygame.transform.scale(blueButton, (100, 25))
+        screen.blit(blueButton, (windowW/1.3, windowH/1.26 + 25))
+
+        font = pygame.font.SysFont('comicsansms', 18)
+        text = font.render('$20', True, (255, 255, 255))
+        screen.blit(text, (windowW/1.25, windowH/1.26 + 25))
+
+        # amount 30
+        blueButton = pygame.image.load('blueSquare.jpg')
+        blueButton = pygame.transform.scale(blueButton, (100, 25))
+        screen.blit(blueButton, (windowW/1.3, windowH/1.26 + 25+ 25))
+
+        font = pygame.font.SysFont('comicsansms', 18)
+        text = font.render('$30', True, (255, 255, 255))
+        screen.blit(text, (windowW/1.25, windowH/1.26 + 50))
 
 
     # if not gameOver:
@@ -409,7 +450,6 @@ def fold(CPUMoney, onTable):
     onTable = 0
     return (CPUMoney, onTable, justStarted, cards, playerHandPlaying, tableCards, opponentCards, gameOver, onTable)
     
-
 def check(): 
     if len(tableCards) < 5:
         newCards = pickCards(1)
@@ -417,26 +457,94 @@ def check():
             tableCards.add(card)
             del cards[card]
 
-def raiseMoney(CPUMoney, onTable, playerMoney): 
-    onTable += 100
-    CPUMoney -= 50
-    playerMoney -= 50
+def raiseMoney(): 
+    (royalFlushO, straightFlushO, fullHouseO, fourOfAKindO, flushHandO, 
+                    straightO, tripleO, twoPairO, onePairO, noPairO) = handOdds(12**1, list(tableCards) + list(opponentCards))
+    (royalFlushP, straightFlushP, fullHouseP, fourOfAKindP, flushHandP, 
+                    straightP, tripleP, twoPairP, onePairP, noPairP) = handOdds(12**1, list(tableCards) + list(playerHandPlaying))
+    if onePairO + noPairO < onePairP + noPairP and len(tableCards) > 2:
+       return True
+    else:
+        False
+
+def finalRaise(CPUMoney, onTable, playerMoney):
+    onTable += 2*amount
+    CPUMoney -= amount
+    playerMoney -= amount 
     return (CPUMoney, onTable, playerMoney)
+
+def cpuFold(playerMoney, onTable):
+    playerMoney += onTable
+    justStarted = True
+    cards = {}
+    playerHandPlaying = set()
+    tableCards = set()
+    opponentCards = set()
+    gameOver = False
+    onTable = 0
+    return (playerMoney, onTable, justStarted, cards, playerHandPlaying, tableCards, opponentCards, gameOver, onTable)
+    
 
 down = False
 end = False
+raised = False
+amount = 0
+checkRaised = False
+cpuamt = 0
+shouldIraiseScreen = False
+once = False
 while running:
+
+
+    if cpuamt <= amount:
+        shouldIraiseScreen = raiseMoney()
+        once = True
+       
+    drawMoney(CPUMoney, playerMoney, onTable)
+    pygame.display.update()
+
+    if (cpuamt > amount) and not end:
+        if once:
+            CPUMoney, onTable, playerMoney = finalRaise(CPUMoney, onTable, playerMoney)
+            once = False
+        drawMoney(CPUMoney, playerMoney, onTable)
+        pygame.display.update()
+        font = pygame.font.SysFont("comicsansms", 18)
+        text = font.render(f"Your opponnent would like to raise to ${cpuamt}", True, (0, 0, 0))
+        screen.blit(text,(windowW/1.6 - 5, 90))
+        font = pygame.font.SysFont("comicsansms", 18)
+        text = font.render(f"Would you like to play the same amount, ", True, (0, 0, 0))
+        screen.blit(text,(windowW/1.6 - 10, 90 + 20))
+        font = pygame.font.SysFont("comicsansms", 18)
+        text = font.render(f" raise, or fold?", True, (0, 0, 0))
+        screen.blit(text,(windowW/1.6 + 50, 90 + 40))
+
+        blueButton = pygame.image.load('green.png')
+        blueButton = pygame.transform.scale(blueButton, (100, 50))
+        screen.blit(blueButton, (windowW/1.3, windowH/1.45))
+
+        # amount 0
+        blueButton = pygame.image.load('blueSquare.jpg')
+        blueButton = pygame.transform.scale(blueButton, (100, 25))
+        screen.blit(blueButton, (windowW/1.3, windowH/1.26 + 75))
+
+        font = pygame.font.SysFont('comicsansms', 18)
+        text = font.render('$0', True, (255, 255, 255))
+        screen.blit(text, (windowW/1.25, windowH/1.26 + 75))
+        pygame.display.update()
+
     for event in pygame.event.get():  
         if event.type == pygame.QUIT:
              running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             down = True
-    # time.sleep(5)
+    
     if down and end:
         (CPUMoney, onTable, justStarted, cards, playerHandPlaying, tableCards, opponentCards, gameOver, onTable) = fold(CPUMoney, onTable)
         makeDeck()
         gameOver = False
         end = False
+
     if justStarted:
         playerHandPlaying = pickCards(2)
         for card in playerHandPlaying:
@@ -445,27 +553,66 @@ while running:
         for card in opponentCards:
             del cards[card]
         justStarted = False
+        onTable = 4
+        CPUMoney -= 2
+        playerMoney -=2 
+        raised = False
     
     drawPlaying()
+
     if down:
         pos = pygame.mouse.get_pos()
         if end == False:
             if 691 <= pos[0] <= 790 and 352 <= pos[1] <= 401:
-                # (CPUMoney, onTable, justStarted, cards, playerHandPlaying, tableCards, opponentCards, gameOver, onTable) = fold(CPUMoney, onTable)
-                # makeDeck()
                 end = True
             if 691 <= pos[0] <= 790 and 414 <= pos[1] <= 462:
                 check()
-            if 691 <= pos[0] <= 790 and 475 <= pos[1] <= 524:
-                if CPUMoney > 0 and playerMoney > 0:
-                    (CPUMoney, onTable, playerMoney) = raiseMoney(CPUMoney, onTable, playerMoney)
-                check()
+            if raised == False:
+                if 691 <= pos[0] <= 790 and 475 <= pos[1] <= 524:
+                    raised = True
+            elif raised:
+                if 691 <= pos[0] <= 790 and 475 <= pos[1] <= 524 - 25:
+                    amount = 10 + cpuamt
+                    cpuamt = random.choice([10,20,30])
+                    if not(cpuamt > amount):
+                        check()
+                        (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
+                        raised = False
+                        cpuamt = 0
+                elif 691 <= pos[0] <= 790 and 501 <= pos[1] <= 525:
+                    amount = 20 + cpuamt
+                    cpuamt = random.choice([10,20,30])
+                    if not(cpuamt > amount):
+                        check()
+                        (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
+                        raised = False
+                        cpuamt = 0
+                elif 691 <= pos[0] <= 790 and 525 <= pos[1] <= 525 + 25:
+                    amount = 30 + cpuamt
+                    cpuamt = random.choice([10,20,30])
+                    if not(cpuamt > amount):
+                        check()
+                        (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
+                        raised = False
+                        cpuamt = 0
+                elif 691 <= pos[0] <= 790 and 525 + 25<= pos[1] <= 525 + 50:
+                    amount = 0 + cpuamt
+                    cpuamt = random.choice([10,20,30])
+                    if not(cpuamt > amount):
+                        check()
+                        (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
+                        raised = False
+                        cpuamt = 0
+                if not(shouldIraiseScreen == True and (cpuamt > amount)):
+                    shouldIraiseScreen = raiseMoney()
+
         if len(tableCards) == 5: 
             end = True
+
     if end:
         gameOver = True
         whoWon = winner(tableCards, playerHandPlaying, opponentCards)
-        if whoWon: #True if the player won, false if opponenet, and none if tie
+        if whoWon: # True if the player won, false if opponenet, and none if tie
             playerMoney += onTable
             onTable = 0
         if whoWon == False:
@@ -475,10 +622,7 @@ while running:
             CPUMoney += onTable//2
             playerMoney += onTable//2
             onTable = 0
-        # clock = pygame.time.Clock()
-        # clock.tick(100000)\gameOver = False
-
-        
+        shouldIraiseScreen = False
 
     count = 0
     space1 = 9.0
@@ -499,11 +643,10 @@ while running:
             spacing = space4
         if count == 5:
             spacing = space5
-
         card = pygame.image.load(f'{card.rank}{card.suit}.png')
         card = pygame.transform.scale(card, (150, 200))
         screen.blit(card, (windowW/spacing, windowH/4))
-    
+  
     drawMoney(CPUMoney, playerMoney, onTable)
 
     down = False
