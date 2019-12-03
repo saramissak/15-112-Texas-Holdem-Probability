@@ -1,3 +1,6 @@
+# bluffing feature
+# if the user keeps playing conservatively raise more
+
 import pygame
 import random
 from texasHoldemAnimation import Card
@@ -11,10 +14,6 @@ pygame.init()
 windowW = 900
 windowH = 600
 screen = pygame.display.set_mode((windowW, windowH))
-
-# pygame.display.set_caption('Texas Holdem Probability')
-# icon = pygame.image.load('pc.png')
-# pygame.display.set_icon(icon)
 
 class Card():
     def __init__(self, rank, suit):
@@ -149,7 +148,7 @@ def winner(tableCards, playerHandPlaying, opponentCards):
         elif highestsO == 'A':
             return False
         else:
-            return returnValue(highestsP0) > returnValue(highestsO)
+            return returnValue(highestsP) > returnValue(highestsO)
     elif quadrupleP == 1 and quadrupleO == 1: 
         if quadNumP == quadNumO:
             return None
@@ -319,19 +318,6 @@ def makeDeck():
                                     120*(1+col)]
             row += 1
 
-running = True
-justStarted = True
-cards = {}
-playerHandPlaying = set()
-tableCards = set()
-opponentCards = set()
-playerMoney = 500
-CPUMoney = 500
-gameOver = False
-onTable = 0
-
-makeDeck()
-
 def pickCards(remaining):
     cardsPicked = set()
     while len(cardsPicked) != remaining:
@@ -343,15 +329,18 @@ def drawPlaying():
     screen.fill((0,255,150))
     playerList = list(playerHandPlaying)
     # first player card
+    # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
     card = pygame.image.load(f'{playerList[0].rank}{playerList[0].suit}.png')
     card = pygame.transform.scale(card, (150, 200))
     screen.blit(card, (windowW/5.0, windowH/1.7))
     # second player card
+    # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
     card = pygame.image.load(f'{playerList[1].rank}{playerList[1].suit}.png')
     card = pygame.transform.scale(card, (150, 200))
     screen.blit(card, (windowW/2.0, windowH/1.7))
 
     # Fold
+    # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
     blueButton = pygame.image.load('blueSquare.jpg')
     blueButton = pygame.transform.scale(blueButton, (100, 50))
     screen.blit(blueButton, (windowW/1.3, windowH/1.7))
@@ -361,6 +350,7 @@ def drawPlaying():
     screen.blit(text, (windowW/1.24, windowH/1.7))
 
     # Check
+    # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
     blueButton = pygame.image.load('blueSquare.jpg')
     blueButton = pygame.transform.scale(blueButton, (100, 50))
     screen.blit(blueButton, (windowW/1.3, windowH/1.45))
@@ -371,6 +361,7 @@ def drawPlaying():
 
     # Raise
     if not raised:
+        # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
         blueButton = pygame.image.load('blueSquare.jpg')
         blueButton = pygame.transform.scale(blueButton, (100, 50))
         screen.blit(blueButton, (windowW/1.3, windowH/1.26))
@@ -380,6 +371,7 @@ def drawPlaying():
         screen.blit(text, (windowW/1.25, windowH/1.26))
     else: 
         # amount 10
+        # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
         blueButton = pygame.image.load('blueSquare.jpg')
         blueButton = pygame.transform.scale(blueButton, (100, 25))
         screen.blit(blueButton, (windowW/1.3, windowH/1.26))
@@ -389,6 +381,7 @@ def drawPlaying():
         screen.blit(text, (windowW/1.25, windowH/1.26))
 
         # amount 20
+        # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
         blueButton = pygame.image.load('blueSquare.jpg')
         blueButton = pygame.transform.scale(blueButton, (100, 25))
         screen.blit(blueButton, (windowW/1.3, windowH/1.26 + 25))
@@ -398,6 +391,7 @@ def drawPlaying():
         screen.blit(text, (windowW/1.25, windowH/1.26 + 25))
 
         # amount 30
+        # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
         blueButton = pygame.image.load('blueSquare.jpg')
         blueButton = pygame.transform.scale(blueButton, (100, 25))
         screen.blit(blueButton, (windowW/1.3, windowH/1.26 + 25+ 25))
@@ -409,19 +403,21 @@ def drawPlaying():
 
     # if not gameOver:
     if not gameOver:
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         blueButton = pygame.image.load('purple_back.png')
         blueButton = pygame.transform.scale(blueButton, (100, 2*(200//3)))
         screen.blit(blueButton, (windowW/3, windowH/33))
-
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         blueButton = pygame.image.load('purple_back.png')
         blueButton = pygame.transform.scale(blueButton, (100, 2*(200//3)))
         screen.blit(blueButton, (windowW/2.2, windowH/33))
     else:
         CPUlist = list(opponentCards)
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         blueButton = pygame.image.load(f'{CPUlist[0].rank}{CPUlist[0].suit}.png')
         blueButton = pygame.transform.scale(blueButton, (100, 2*(200//3)))
         screen.blit(blueButton, (windowW/3, windowH/33))
-
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         blueButton = pygame.image.load(f'{CPUlist[1].rank}{CPUlist[1].suit}.png')
         blueButton = pygame.transform.scale(blueButton, (100, 2*(200//3)))
         screen.blit(blueButton, (windowW/2.2, windowH/33))
@@ -450,12 +446,21 @@ def fold(CPUMoney, onTable):
     onTable = 0
     return (CPUMoney, onTable, justStarted, cards, playerHandPlaying, tableCards, opponentCards, gameOver, onTable)
     
-def check(): 
+def check(first3): 
+    if first3:
+        for _ in range(2):
+            if len(tableCards) < 5:
+                newCards = pickCards(1)
+                for card in newCards:
+                    tableCards.add(card)
+                    del cards[card]
+        first3 = False
     if len(tableCards) < 5:
-        newCards = pickCards(1)
-        for card in newCards:
-            tableCards.add(card)
-            del cards[card]
+                newCards = pickCards(1)
+                for card in newCards:
+                    tableCards.add(card)
+                    del cards[card]
+    return first3
 
 def raiseMoney(): 
     (royalFlushO, straightFlushO, fullHouseO, fourOfAKindO, flushHandO, 
@@ -484,6 +489,52 @@ def cpuFold(playerMoney, onTable):
     onTable = 0
     return (playerMoney, onTable, justStarted, cards, playerHandPlaying, tableCards, opponentCards, gameOver, onTable)
     
+def probabilityBox():
+    # box with probabilities
+    # image taken from: http://www.adelarahayucv.com/images/login_box.png
+    probBox = pygame.image.load('squareProbBox.png')
+    probBox = pygame.transform.scale(probBox, (400, 300))
+    screen.blit(probBox, (windowW/1.7, windowH/1.9 - 225))
+    # probability text
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"Royal Flush: %.02f" % (royalFlush * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.62 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"Straight Flush: %.02f" % (straightFlush * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.54 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"Four of a Kind: %.02f" % (fourOfAKind * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.47 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"Full House %.02f" % (fullHouse * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.41 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"Flush: %.02f" % (flushHand * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.345 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"Straight: %.02f" % (straight * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.29 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"Triple: %.02f" % (triple * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.24 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"Two Pair: %.02f" % (twoPair * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.19 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"One Pair: %.02f" % (onePair * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.15 - 225))
+
+    font = pygame.font.SysFont('comicsansms', 14)
+    text = font.render(f"No Pair: %.02f" % (noPair * 100), True, (0,0,0))
+    screen.blit(text, (windowW/1.5, windowH/1.11 - 225))
 
 down = False
 end = False
@@ -493,8 +544,23 @@ checkRaised = False
 cpuamt = 0
 shouldIraiseScreen = False
 once = False
-while running:
+running = True
+justStarted = True
+cards = {}
+playerHandPlaying = set()
+tableCards = set()
+opponentCards = set()
+playerMoney = 500
+CPUMoney = 500
+gameOver = False
+onTable = 0
+userConservativeCount = 0
 
+(royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0,0
+
+makeDeck()
+while running:
+    # probabilityBox()
 
     if cpuamt <= amount:
         shouldIraiseScreen = raiseMoney()
@@ -524,6 +590,7 @@ while running:
         screen.blit(blueButton, (windowW/1.3, windowH/1.45))
 
         # amount 0
+        # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
         blueButton = pygame.image.load('blueSquare.jpg')
         blueButton = pygame.transform.scale(blueButton, (100, 25))
         screen.blit(blueButton, (windowW/1.3, windowH/1.26 + 75))
@@ -557,6 +624,20 @@ while running:
         CPUMoney -= 2
         playerMoney -=2 
         raised = False
+        first3 = True
+        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+        #     royalFlush = 1
+        # elif flush(playerHandPlaying)[0] == True: 
+        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
+        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+        #     straightFlush = 1
+        # else:  
+        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**3, playerHandPlaying)
+        #     fullHouse += triple
+        #     triple = 0
     
     drawPlaying()
 
@@ -566,7 +647,20 @@ while running:
             if 691 <= pos[0] <= 790 and 352 <= pos[1] <= 401:
                 end = True
             if 691 <= pos[0] <= 790 and 414 <= pos[1] <= 462:
-                check()
+                first3 = check(first3)
+                # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                #     royalFlush = 1
+                # elif flush(playerHandPlaying)[0] == True: 
+                #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                #     straightFlush = 1
+                # else:  
+                #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                #     fullHouse += triple
+                #     triple = 0
             if raised == False:
                 if 691 <= pos[0] <= 790 and 475 <= pos[1] <= 524:
                     raised = True
@@ -575,34 +669,86 @@ while running:
                     amount = 10 + cpuamt
                     cpuamt = random.choice([10,20,30])
                     if not(cpuamt > amount):
-                        check()
+                        first3 = check(first3)
                         (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
                         raised = False
                         cpuamt = 0
+                        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        #     royalFlush = 1
+                        # elif flush(playerHandPlaying)[0] == True: 
+                        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        #     straightFlush = 1
+                        # else:  
+                        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                        #     fullHouse += triple
+                        #     triple = 0
                 elif 691 <= pos[0] <= 790 and 501 <= pos[1] <= 525:
                     amount = 20 + cpuamt
                     cpuamt = random.choice([10,20,30])
                     if not(cpuamt > amount):
-                        check()
+                        first3 = check(first3)
                         (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
                         raised = False
                         cpuamt = 0
+                        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        #     royalFlush = 1
+                        # elif flush(playerHandPlaying)[0] == True: 
+                        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        #     straightFlush = 1
+                        # else:  
+                        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                        #     fullHouse += triple
+                        #     triple = 0
                 elif 691 <= pos[0] <= 790 and 525 <= pos[1] <= 525 + 25:
                     amount = 30 + cpuamt
                     cpuamt = random.choice([10,20,30])
                     if not(cpuamt > amount):
-                        check()
+                        first3 = check(first3)
                         (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
                         raised = False
                         cpuamt = 0
+                        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        #     royalFlush = 1
+                        # elif flush(playerHandPlaying)[0] == True: 
+                        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        #     straightFlush = 1
+                        # else:  
+                        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                        #     fullHouse += triple
+                        #     triple = 0
                 elif 691 <= pos[0] <= 790 and 525 + 25<= pos[1] <= 525 + 50:
                     amount = 0 + cpuamt
                     cpuamt = random.choice([10,20,30])
                     if not(cpuamt > amount):
-                        check()
+                        first3 = check(first3)
                         (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
                         raised = False
                         cpuamt = 0
+                        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        #     royalFlush = 1
+                        # elif flush(playerHandPlaying)[0] == True: 
+                        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        #     straightFlush = 1
+                        # else:  
+                        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                        #     fullHouse += triple
+                        #     triple = 0
                 if not(shouldIraiseScreen == True and (cpuamt > amount)):
                     shouldIraiseScreen = raiseMoney()
 
@@ -643,6 +789,7 @@ while running:
             spacing = space4
         if count == 5:
             spacing = space5
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         card = pygame.image.load(f'{card.rank}{card.suit}.png')
         card = pygame.transform.scale(card, (150, 200))
         screen.blit(card, (windowW/spacing, windowH/4))

@@ -1,5 +1,6 @@
 import pygame
 import random
+# from playingAgainstComputer import play
 # from playingAgainstComputer import *
 
 pygame.init()
@@ -8,6 +9,7 @@ windowW = 900
 windowH = 600
 screen = pygame.display.set_mode((windowW, windowH))
 
+# image taken from: http://pngimg.com/download/8460
 pygame.display.set_caption('Texas Holdem Probability')
 icon = pygame.image.load('pc.png')
 pygame.display.set_icon(icon)
@@ -43,13 +45,11 @@ def pickCards(remaining):
         cardsPicked.add(cardP)
     return cardsPicked
 
-# handtypes always empty
 def trialSucceeds(deck):
     handTypes = {'A': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, 'J': 0, 'Q': 0, 'K': 0,
             'D': 0, 'H': 0, 'S': 0, 'C': 0}
     cardsPicked = pickCards(7 - len(deck))
     cardsDown = list(cardsPicked) + list(deck)
-    # print('trialssucccs', cardsPicked, playerHandCord)
     pairs = 0
     triples = 0
     singles = 0
@@ -92,8 +92,6 @@ def trialSucceeds(deck):
     elif pairs >= 2 and triples == 0: return 'Two pair'
     elif pairs == 1 and triples == 0: return 'One pair'
     else:  return 'No Pair'
-        # print(cardsDown, '\n', handTypes, '\n', D,H,S,C,  '\n',pairs, triples, singles)
-
 
 def checkStraight(deck):
     numbers = []
@@ -137,7 +135,6 @@ def flush(deck):
         if count == 5:
             return (True, highest)
     return (count >= 5, highest)
-    # flush({Card('2','S'), Card('6','S'), Card('5','S'), Card('3','S'), Card('4','S'), Card('1','S')})
     
 def handOdds(trials, deck):
     royalFlush = 0
@@ -181,11 +178,14 @@ def initial():
     font = pygame.font.SysFont("comicsansms", 36)
     text = font.render("Welcome to Texas Holdem Probability", True, (0, 0, 0))
     # cool cards image in the middle of the screen
+
+    # image taken from: http://pngimg.com/download/8460
     bgImage = pygame.image.load('backgroundimage.png')
     bgImage = pygame.transform.scale(bgImage, (600, 450))
     screen.blit(bgImage, (windowW//7, windowH//6))
     screen.blit(text,(100, 10))
     # click here image
+    # image taken from: https://www.kc-beauty.com/salon-services
     click = pygame.image.load('clickHere.png')
     click = pygame.transform.scale(click, (200, 150))
     screen.blit(click, (windowW/2.5, windowH/1.4))
@@ -196,71 +196,86 @@ def currentTableScreen():
     for key in playerHandCord:
         playerList.append(key)
     if len(playerList) >= 1:
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         card = pygame.image.load(f'{playerList[0].rank}{playerList[0].suit}.png')
         card = pygame.transform.scale(card, (150, 200))
         screen.blit(card, (windowW/5.0, windowH/1.7))
     else: 
         # first in hand   
+        # image taken from: www.vonsheatingandair.com/images/Dotted%20Line%20Coupon.png 
         hand1 = pygame.image.load('outline.png')
         hand1 = pygame.transform.scale(hand1, (150, 200))
         screen.blit(hand1, (windowW/5.0, windowH/1.7))
     if len(playerList) >= 2:
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         hand2 = pygame.image.load(f'{playerList[1].rank}{playerList[1].suit}.png')
         hand2 = pygame.transform.scale(hand2, (150, 200))
         screen.blit(hand2, (windowW/2.5, windowH/1.7))
     else: 
         # second in hand
+        # image taken from: www.vonsheatingandair.com/images/Dotted%20Line%20Coupon.png
         hand2 = pygame.image.load('outline.png')
         hand2 = pygame.transform.scale(hand2, (150, 200))
         screen.blit(hand2, (windowW/2.5, windowH/1.7))
     if len(playerList) >= 3:
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         table1 = pygame.image.load(f'{playerList[2].rank}{playerList[2].suit}.png')
         table1 = pygame.transform.scale(table1, (150, 200))
         screen.blit(table1, (windowW/19, windowH/9))
     else:
         # first card on table
+        # image taken from: www.vonsheatingandair.com/images/Dotted%20Line%20Coupon.png
         table1 = pygame.image.load('outline.png')
         table1 = pygame.transform.scale(table1, (150, 200))
         screen.blit(table1, (windowW/19, windowH/9))
 
     if len(playerList) >= 4:
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         table2 = pygame.image.load(f'{playerList[3].rank}{playerList[3].suit}.png')
         table2 = pygame.transform.scale(table2, (150, 200))
         screen.blit(table2, (windowW/4.2, windowH/9))
     else:
         # second card on table
+        # image taken from: www.vonsheatingandair.com/images/Dotted%20Line%20Coupon.png
         table2 = pygame.image.load('outline.png')
         table2 = pygame.transform.scale(table2, (150, 200))
         screen.blit(table2, (windowW/4.2, windowH/9))
 
     if len(playerList) >= 5: 
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         table3 = pygame.image.load(f'{playerList[4].rank}{playerList[4].suit}.png')
         table3 = pygame.transform.scale(table3, (150, 200))
         screen.blit(table3, (windowW/2.35, windowH/9))
     else:
         # third card on table
+        # image taken from: www.vonsheatingandair.com/images/Dotted%20Line%20Coupon.png
         table3 = pygame.image.load('outline.png')
         table3 = pygame.transform.scale(table3, (150, 200))
         screen.blit(table3, (windowW/2.35, windowH/9))
     if len(playerList) >= 6:
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         hand4 = pygame.image.load(f'{playerList[5].rank}{playerList[5].suit}.png')
         hand4 = pygame.transform.scale(hand4, (150, 200))
         screen.blit(hand4, (windowW/1.64, windowH/9))
     else:
         # fourth card on table
+        # image taken from: www.vonsheatingandair.com/images/Dotted%20Line%20Coupon.png
         hand4 = pygame.image.load('outline.png')
         hand4 = pygame.transform.scale(hand4, (150, 200))
         screen.blit(hand4, (windowW/1.64, windowH/9))
     if len(playerList) >= 7:
+        # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
         hand5 = pygame.image.load(f'{playerList[6].rank}{playerList[6].suit}.png')
         hand5 = pygame.transform.scale(hand5, (150, 200))
         screen.blit(hand5, (windowW/1.26, windowH/9))
     else:
         # fifth card on table
+        # image taken from: www.vonsheatingandair.com/images/Dotted%20Line%20Coupon.png
         hand5 = pygame.image.load('outline.png')
         hand5 = pygame.transform.scale(hand5, (150, 200))
         screen.blit(hand5, (windowW/1.26, windowH/9))
     # box with probabilities
+    # image taken from: http://www.adelarahayucv.com/images/login_box.png
     probBox = pygame.image.load('squareProbBox.png')
     probBox = pygame.transform.scale(probBox, (400, 300))
     screen.blit(probBox, (windowW/1.7, windowH/1.9))
@@ -306,11 +321,8 @@ def currentTableScreen():
     text = font.render(f"No Pair: %.02f" % (noPair * 100), True, (0,0,0))
     screen.blit(text, (windowW/1.5, windowH/1.11))
 
-
-    # (royalFlush, straightFlush, fullHouse, fourOfAKind, flush, straight, triple, twoPair, onePair, noPair)
-
-
     # next card button
+    # image taken from: http://www.clker.com/cliparts/m/S/m/C/X/Q/black-square-rounded-corners-hi.png
     rectangle = pygame.image.load('roundSquare.png')
     rectangle = pygame.transform.scale(rectangle, (windowW//5, windowH//7))
     screen.blit(rectangle, (windowW/100, windowH/1.483))
@@ -343,10 +355,12 @@ def cardsToPickFrom():
                 row = 0
                 col += 1
             if Card(rank, suit) in playerHandCord: 
+                # image taken from: www.vonsheatingandair.com/images/Dotted%20Line%20Coupon.png
                 card = pygame.image.load('outline.png')
                 card = pygame.transform.scale(card, (65, 115))
                 screen.blit(card, (.05 + row*(windowW/12.98), 120*col))
             else:
+                # image taken from: http://acbl.mybigcommerce.com/52-playing-cards/
                 card = pygame.image.load(f'{rank}{suit}.png')
                 card = pygame.transform.scale(card, (65, 115))
                 screen.blit(card, (.05 + row*(windowW/12.98), 120*col))
@@ -363,6 +377,7 @@ def pickingScreen():
     text = font.render("or be more accurate in the probabilities?", 56, (0,0,0))
     screen.blit(text, (125, 25+36))
     # next card button
+    # image taken from: http://www.clker.com/cliparts/m/S/m/C/X/Q/black-square-rounded-corners-hi.png
     rectangle = pygame.image.load('roundSquare.png')
     rectangle = pygame.transform.scale(rectangle, (windowW//2, windowH//5))
     screen.blit(rectangle, (windowW/100, windowH/2.2))
@@ -372,6 +387,7 @@ def pickingScreen():
     screen.blit(text, (windowW/7, windowH/2))
 
     # next card button
+    # image taken from: http://www.clker.com/cliparts/m/S/m/C/X/Q/black-square-rounded-corners-hi.png
     rectangle = pygame.image.load('roundSquare.png')
     rectangle = pygame.transform.scale(rectangle, (windowW//2, windowH//5))
     screen.blit(rectangle, (windowW/2, windowH/2.2))
@@ -390,6 +406,7 @@ def pickPlayingMode():
     screen.blit(text, (125, 25+36))
 
     # next card button
+    # image taken from: http://www.clker.com/cliparts/m/S/m/C/X/Q/black-square-rounded-corners-hi.png
     rectangle = pygame.image.load('roundSquare.png')
     rectangle = pygame.transform.scale(rectangle, (windowW//2, windowH//5))
     screen.blit(rectangle, (windowW/100, windowH/2.2))
@@ -399,6 +416,7 @@ def pickPlayingMode():
     screen.blit(text, (windowW/7, windowH/2))
 
     # next card button
+    # image taken from: http://www.clker.com/cliparts/m/S/m/C/X/Q/black-square-rounded-corners-hi.png
     rectangle = pygame.image.load('roundSquare.png')
     rectangle = pygame.transform.scale(rectangle, (windowW//2, windowH//5))
     screen.blit(rectangle, (windowW/2, windowH/2.2))
@@ -472,11 +490,12 @@ while running:
                     from playingAgainstComputer import *    
                 down = False
                 continue
-    elif pickEfficiency:
+        
+    if pickEfficiency:
+        print('entered')
         pickingScreen()
-        if event.type == pygame.MOUSEBUTTONUP:
+        if down:
             pos = pygame.mouse.get_pos()
-            print(pos)
             if 30 <= pos[0] <= 420 and 276 <= pos[1] <=380:
                 trials = 12**3
                 pickEfficiency = False
