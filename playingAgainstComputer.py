@@ -1,5 +1,4 @@
 # bluffing feature
-# if the user keeps playing conservatively raise more
 
 import pygame
 import random
@@ -400,6 +399,36 @@ def drawPlaying():
         text = font.render('$30', True, (255, 255, 255))
         screen.blit(text, (windowW/1.25, windowH/1.26 + 50))
 
+        # amount 40
+        # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
+        blueButton = pygame.image.load('blueSquare.jpg')
+        blueButton = pygame.transform.scale(blueButton, (100, 25))
+        screen.blit(blueButton, (windowW/1.3 + 100, windowH/1.26))
+
+        font = pygame.font.SysFont('comicsansms', 18)
+        text = font.render('$40', True, (255, 255, 255))
+        screen.blit(text, (windowW/1.25 + 100, windowH/1.26))
+
+        # amount 50
+        # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
+        blueButton = pygame.image.load('blueSquare.jpg')
+        blueButton = pygame.transform.scale(blueButton, (100, 25))
+        screen.blit(blueButton, (windowW/1.3 + 100, windowH/1.26 + 25))
+
+        font = pygame.font.SysFont('comicsansms', 18)
+        text = font.render('$50', True, (255, 255, 255))
+        screen.blit(text, (windowW/1.25 + 100, windowH/1.26 + 25))
+
+        # amount 60
+        # image taken from: https://cdn.shopify.com/s/files/1/0402/3309/collections/Blue_Square_medium.jpg?v=1418931750 
+        blueButton = pygame.image.load('blueSquare.jpg')
+        blueButton = pygame.transform.scale(blueButton, (100, 25))
+        screen.blit(blueButton, (windowW/1.3 + 100, windowH/1.26 + 25+ 25))
+
+        font = pygame.font.SysFont('comicsansms', 18)
+        text = font.render('$60', True, (255, 255, 255))
+        screen.blit(text, (windowW/1.25 + 100, windowH/1.26 + 50))
+
 
     # if not gameOver:
     if not gameOver:
@@ -462,15 +491,54 @@ def check(first3):
                     del cards[card]
     return first3
 
-def raiseMoney(): 
+def raiseMoney(userConservativeCount): 
     (royalFlushO, straightFlushO, fullHouseO, fourOfAKindO, flushHandO, 
                     straightO, tripleO, twoPairO, onePairO, noPairO) = handOdds(12**1, list(tableCards) + list(opponentCards))
     (royalFlushP, straightFlushP, fullHouseP, fourOfAKindP, flushHandP, 
                     straightP, tripleP, twoPairP, onePairP, noPairP) = handOdds(12**1, list(tableCards) + list(playerHandPlaying))
+    tblHandTypes = {'A': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, 'J': 0, 'Q': 0, 'K': 0,
+            'D': 0, 'H': 0, 'S': 0, 'C': 0}
+    tbl = list(tableCards)
+    # pairsP = 0
+    # triplesP = 0
+    # singlesP = 0
+    # quadrupleP = 0
+    DP = 0
+    HP = 0
+    SP = 0
+    CP = 0 
+    for card in tbl:
+        tblHandTypes[card.suit] = tblHandTypes.get(card.suit, 0) + 1
+        # tblHandTypes[card.rank] = tblHandTypes.get(card.rank, 0) + 1
+    for key in tblHandTypes:
+        # if key in ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']:
+        #     if tblHandTypes[key] == 2:
+        #         pairsP += 1
+        #     elif tblHandTypes[key] == 3:
+        #         triplesP += 1
+        #     elif tblHandTypes[key] == 4:
+        #         quadrupleP += 1
+        #     elif tblHandTypes[key] == 1:
+        #         singlesP += 1
+        if key in ['C', 'S', 'D', 'H']:
+            if key == 'D':
+                DP = tblHandTypes[key]
+            if key ==  'H':
+                HP = tblHandTypes[key]
+            if key == 'S':
+                SP = tblHandTypes[key]
+            if key == 'C':
+                CP = tblHandTypes[key]
+    if DP == 4 or HP == 4 or SP == 4 or CP == 4:
+        if CPUMoney < playerMoney:
+            return (True, 40)
+        else:
+            return (True, 60)
+    if userConservativeCount > 5:
+        return (True, 50)
     if onePairO + noPairO < onePairP + noPairP and len(tableCards) > 2:
-       return True
-    else:
-        False
+       return (True, 0)
+    return (False, 0)
 
 def finalRaise(CPUMoney, onTable, playerMoney):
     onTable += 2*amount
@@ -560,10 +628,11 @@ userConservativeCount = 0
 
 makeDeck()
 while running:
-    # probabilityBox()
+    if False:
+        probabilityBox()
 
     if cpuamt <= amount:
-        shouldIraiseScreen = raiseMoney()
+        shouldIraiseScreen = raiseMoney(userConservativeCount)[0]
         once = True
        
     drawMoney(CPUMoney, playerMoney, onTable)
@@ -625,19 +694,20 @@ while running:
         playerMoney -=2 
         raised = False
         first3 = True
-        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
-        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
-        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-        #     royalFlush = 1
-        # elif flush(playerHandPlaying)[0] == True: 
-        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
-        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-        #     straightFlush = 1
-        # else:  
-        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
-        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**3, playerHandPlaying)
-        #     fullHouse += triple
-        #     triple = 0
+        if False:
+            if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                royalFlush = 1
+            elif flush(playerHandPlaying)[0] == True: 
+                (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                straightFlush = 1
+            else:  
+                (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                straight, triple, twoPair, onePair, noPair) = handOdds(10**3, playerHandPlaying)
+                fullHouse += triple
+                triple = 0
     
     drawPlaying()
 
@@ -648,109 +718,222 @@ while running:
                 end = True
             if 691 <= pos[0] <= 790 and 414 <= pos[1] <= 462:
                 first3 = check(first3)
-                # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
-                #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
-                #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                #     royalFlush = 1
-                # elif flush(playerHandPlaying)[0] == True: 
-                #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
-                #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                #     straightFlush = 1
-                # else:  
-                #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
-                #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
-                #     fullHouse += triple
-                #     triple = 0
+                if False:
+                    if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                        ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        royalFlush = 1
+                    elif flush(playerHandPlaying)[0] == True: 
+                        (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                        straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                        straightFlush = 1
+                    else:  
+                        (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                        straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                        fullHouse += triple
+                        triple = 0
             if raised == False:
                 if 691 <= pos[0] <= 790 and 475 <= pos[1] <= 524:
                     raised = True
+                    userConservativeCount += 1
             elif raised:
                 if 691 <= pos[0] <= 790 and 475 <= pos[1] <= 524 - 25:
+                    userConservativeCount += 1
                     amount = 10 + cpuamt
-                    cpuamt = random.choice([10,20,30])
+                    print('yep')
+                    raisedAMT = raiseMoney(userConservativeCount)[1]
+                    if raisedAMT != 0: 
+                        cpuamt = raisedAMT
+                        print(cpuamt, userConservativeCount)
+                    else:
+                        cpuamt = random.choice([10,20,30, 40, 60])
+                    
                     if not(cpuamt > amount):
                         first3 = check(first3)
                         (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
                         raised = False
                         cpuamt = 0
-                        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
-                        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                        #     royalFlush = 1
-                        # elif flush(playerHandPlaying)[0] == True: 
-                        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                        #     straightFlush = 1
-                        # else:  
-                        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
-                        #     fullHouse += triple
-                        #     triple = 0
+                    if False:
+                        if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                            ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                            straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                            royalFlush = 1
+                        elif flush(playerHandPlaying)[0] == True: 
+                            (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                            straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                            straightFlush = 1
+                        else:  
+                            (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                            straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                            fullHouse += triple
+                            triple = 0
+                elif 791 <= pos[0] <= 890 and 475 <= pos[1] <= 524 - 25:
+                    amount = 40 + cpuamt
+                    raisedAMT = raiseMoney(userConservativeCount)[1]
+                    if raisedAMT != 0: 
+                        cpuamt = raisedAMT
+                    else:
+                        cpuamt = random.choice([10,20,30, 40, 60])
+                    
+                    if not(cpuamt > amount):
+                        first3 = check(first3)
+                        (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
+                        raised = False
+                        cpuamt = 0
+                    if False:
+                        if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                            ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                            straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                            royalFlush = 1
+                        elif flush(playerHandPlaying)[0] == True: 
+                            (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                            straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                            straightFlush = 1
+                        else:  
+                            (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                            straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                            fullHouse += triple
+                            triple = 0
                 elif 691 <= pos[0] <= 790 and 501 <= pos[1] <= 525:
                     amount = 20 + cpuamt
-                    cpuamt = random.choice([10,20,30])
+                    raisedAMT = raiseMoney(userConservativeCount)[1]
+                    if raisedAMT != 0: 
+                        cpuamt = raisedAMT
+                    else:
+                        cpuamt = random.choice([10,20,30, 40, 60])
+                    
                     if not(cpuamt > amount):
                         first3 = check(first3)
                         (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
                         raised = False
                         cpuamt = 0
-                        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
-                        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                        #     royalFlush = 1
-                        # elif flush(playerHandPlaying)[0] == True: 
-                        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                        #     straightFlush = 1
-                        # else:  
-                        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
-                        #     fullHouse += triple
-                        #     triple = 0
+                    if False:
+                            if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                                ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                royalFlush = 1
+                            elif flush(playerHandPlaying)[0] == True: 
+                                (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                straightFlush = 1
+                            else:  
+                                (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                                fullHouse += triple
+                                triple = 0
+                elif 791 <= pos[0] <= 890 and 501 <= pos[1] <= 525:
+                    amount = 50 + cpuamt
+                    raisedAMT = raiseMoney(userConservativeCount)[1]
+                    if raisedAMT != 0: 
+                        cpuamt = raisedAMT
+                    else:
+                        cpuamt = random.choice([10,20,30, 40, 60])
+                    
+                    userConservativeCount = 0
+                    if not(cpuamt > amount):
+                        first3 = check(first3)
+                        (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
+                        raised = False
+                        cpuamt = 0
+                    if False:
+                            if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                                ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                royalFlush = 1
+                            elif flush(playerHandPlaying)[0] == True: 
+                                (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                straightFlush = 1
+                            else:  
+                                (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                                fullHouse += triple
+                                triple = 0
                 elif 691 <= pos[0] <= 790 and 525 <= pos[1] <= 525 + 25:
                     amount = 30 + cpuamt
-                    cpuamt = random.choice([10,20,30])
+                    raisedAMT = raiseMoney(userConservativeCount)[1]
+                    if raisedAMT != 0: 
+                        cpuamt = raisedAMT
+                    else:
+                        cpuamt = random.choice([10,20,30, 40, 60])
+                    
+                    userConservativeCount = 0
                     if not(cpuamt > amount):
                         first3 = check(first3)
                         (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
                         raised = False
                         cpuamt = 0
-                        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
-                        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                        #     royalFlush = 1
-                        # elif flush(playerHandPlaying)[0] == True: 
-                        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                        #     straightFlush = 1
-                        # else:  
-                        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
-                        #     fullHouse += triple
-                        #     triple = 0
+                    if False:
+                            if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                                ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                royalFlush = 1
+                            elif flush(playerHandPlaying)[0] == True: 
+                                (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                straightFlush = 1
+                            else:  
+                                (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                                fullHouse += triple
+                                triple = 0
+                elif 791 <= pos[0] <= 890 and 525 <= pos[1] <= 525 + 25:
+                    amount = 60 + cpuamt
+                    raisedAMT = raiseMoney(userConservativeCount)[1]
+                    if raisedAMT != 0: 
+                        cpuamt = raisedAMT
+                    else:
+                        cpuamt = random.choice([10,20,30, 40, 60])
+                    
+                    userConservativeCount = 0
+                    if not(cpuamt > amount):
+                        first3 = check(first3)
+                        (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
+                        raised = False
+                        cpuamt = 0
+                    if False:
+                            if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                                ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                royalFlush = 1
+                            elif flush(playerHandPlaying)[0] == True: 
+                                (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                straightFlush = 1
+                            else:  
+                                (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                                fullHouse += triple
+                                triple = 0
                 elif 691 <= pos[0] <= 790 and 525 + 25<= pos[1] <= 525 + 50:
                     amount = 0 + cpuamt
-                    cpuamt = random.choice([10,20,30])
+                    raisedAMT = raiseMoney(userConservativeCount)[1]
+                    if raisedAMT != 0: 
+                        cpuamt = raisedAMT
+                    else:
+                        cpuamt = random.choice([10,20,30, 40, 60])
+                    
                     if not(cpuamt > amount):
                         first3 = check(first3)
                         (CPUMoney, onTable, playerMoney) = finalRaise(CPUMoney, onTable, playerMoney)
                         raised = False
                         cpuamt = 0
-                        # if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
-                        #     ( straightFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                        #     royalFlush = 1
-                        # elif flush(playerHandPlaying)[0] == True: 
-                        #     (royalFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
-                        #     straightFlush = 1
-                        # else:  
-                        #     (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
-                        #     straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
-                        #     fullHouse += triple
-                        #     triple = 0
+                    if False:
+                            if flush(playerHandPlaying)[0] == True and flush(playerHandPlaying)[1] == 14: 
+                                ( straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                royalFlush = 1
+                            elif flush(playerHandPlaying)[0] == True: 
+                                (royalFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0
+                                straightFlush = 1
+                            else:  
+                                (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, 
+                                straight, triple, twoPair, onePair, noPair) = handOdds(10**4, playerHandPlaying)
+                                fullHouse += triple
+                                triple = 0
                 if not(shouldIraiseScreen == True and (cpuamt > amount)):
-                    shouldIraiseScreen = raiseMoney()
+                    shouldIraiseScreen = raiseMoney(userConservativeCount)
 
         if len(tableCards) == 5: 
             end = True

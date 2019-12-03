@@ -442,7 +442,6 @@ pickPlay = False
 (royalFlush, straightFlush, fullHouse, fourOfAKind, flushHand, straight, triple, twoPair, onePair, noPair) = 0,0,0,0,0,0,0,0,0,0
 
 makeDeck()
-# print(cards)
 while running:
     clock = pygame.time.Clock()
     clock.tick(50)
@@ -481,7 +480,6 @@ while running:
         for event in pygame.event.get(): 
             if event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
-                print(pos)
                 if 30 <= pos[0] <= 420 and 276 <= pos[1] <=380:
                     pickEfficiency = True
                     pickPlay = False
@@ -492,7 +490,6 @@ while running:
                 continue
         
     if pickEfficiency:
-        print('entered')
         pickingScreen()
         if down:
             pos = pygame.mouse.get_pos()
@@ -509,7 +506,6 @@ while running:
         currentTableScreen()
         if down:
             pos = pygame.mouse.get_pos()
-            # print(pos)
             if len(playerHandCord) != 7:
                 if (19 < pos[0] < 170 and 409 < pos[1] < 479): # these are the positions of the first blank card
                     # this is where it changes screens
