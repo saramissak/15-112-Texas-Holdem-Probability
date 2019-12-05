@@ -1,8 +1,9 @@
 import pygame
 import random
-# from playingAgainstComputer import play
-# from playingAgainstComputer import *
+# from main import play
+# from main import *
 
+# RUN MAIN FILE
 pygame.init()
 
 windowW = 900
@@ -477,17 +478,16 @@ while running:
         
     if pickPlay:
         pickPlayingMode()
-        for event in pygame.event.get(): 
-            if event.type == pygame.MOUSEBUTTONUP:
-                pos = pygame.mouse.get_pos()
-                if 30 <= pos[0] <= 420 and 276 <= pos[1] <=380:
-                    pickEfficiency = True
-                    pickPlay = False
-                elif 469 <= pos[0] <= 858 and 276 <= pos[1] <= 381:
-                    pickPlay = False
-                    from playingAgainstComputer import *    
-                down = False
-                continue
+        if down:
+            pos = pygame.mouse.get_pos()
+            if 30 <= pos[0] <= 420 and 276 <= pos[1] <=380:
+                pickEfficiency = True
+                pickPlay = False
+            elif 469 <= pos[0] <= 858 and 276 <= pos[1] <= 381:
+                pickPlay = False
+                from main import *    
+            down = False
+            continue
         
     if pickEfficiency:
         pickingScreen()
